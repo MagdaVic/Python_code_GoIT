@@ -1,0 +1,9 @@
+
+*.zip
+/Мотлох/**
+/Мотлох copy/**
+/Мотлох_copy/**
+/virtual_environment_1/**
+**/__pycache__/**
+**/*.egg-info/**
+/.idea/**
