@@ -2,8 +2,6 @@ from datetime import date, datetime, timedelta
 import sys
 
 def get_dict_week_names(users):
-    dict_week_days={'Monday':[0,5,6], 'Tuesday':[1], 'Wednesday':[2], 'Thursday':[3],'Friday':[4]}
-    dict_week_names={'Monday':[], 'Tuesday':[], 'Wednesday':[], 'Thursday':[],'Friday':[]}
     current_date = datetime.now().date()
     for i in users:
         difference_days=(i['birthday'].date()-current_date).days
@@ -36,6 +34,8 @@ def get_birthdays_per_week():
 
 if __name__ == '__main__':
     users=[{'name':'1','birthday':datetime(year=2023, month=1, day=21, hour=14)},{'name':'2','birthday':datetime(year=2023, month=1, day=20, hour=14)},{'name':'3','birthday':datetime(year=2023, month=1, day=23, hour=14)},{'name':'4','birthday':datetime(year=2023, month=1, day=24, hour=14)},{'name':'5','birthday':datetime(year=2023, month=1, day=24, hour=14)},{'name':'6','birthday':datetime(year=2023, month=1, day=27, hour=14)},{'name':'7','birthday':datetime(year=2023, month=1, day=28, hour=14)}, {'name':'8','birthday':datetime(year=2023, month=1, day=30, hour=14)}]
+    dict_week_days={'Monday':[0,5,6], 'Tuesday':[1], 'Wednesday':[2], 'Thursday':[3],'Friday':[4]}
+    dict_week_names={'Monday':[], 'Tuesday':[], 'Wednesday':[], 'Thursday':[],'Friday':[]}
     get_birthdays_per_week()
 
 
