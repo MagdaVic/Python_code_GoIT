@@ -2,7 +2,6 @@ from datetime import date
 
 
 def get_days_in_month(month, year):
-    number_days=28
     number_days=27
     while True:
         try:
