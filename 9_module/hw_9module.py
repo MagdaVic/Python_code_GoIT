@@ -10,14 +10,14 @@ def hello(x1=None, x2=None):
 def add_name_phone(x1, x2):
     if {'name': x1.lower(), 'phone': x2.lower()} not in list_name_phone:
         list_name_phone.append({'name': x1, 'phone': x2})
-        print('New contacts are added')
+        print('New contacts (name: {x1}, phone: {x2}) are added')
 
 
 def change_phone(x1, x2):
     for i in list_name_phone:
         if x1 == i['name']:
             i['phone'] = x2
-    print('New phone is changed')
+    print(f'New phone of {x1} is changed')
 
 
 def main():
