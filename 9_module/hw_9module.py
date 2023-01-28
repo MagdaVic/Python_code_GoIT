@@ -10,7 +10,7 @@ def hello(x1=None, x2=None):
 def add_name_phone(x1, x2):
     if {'name': x1.lower(), 'phone': x2.lower()} not in list_name_phone:
         list_name_phone.append({'name': x1, 'phone': x2})
-        print('New contacts (name: {x1}, phone: {x2}) are added')
+        print(f'New contacts (name: {x1}, phone: {x2}) are added')
 
 
 def change_phone(x1, x2):
