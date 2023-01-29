@@ -39,15 +39,17 @@ def main():
                 'change': change_phone, 'phone': phone, 'show all': show_all}
     flag = True
     while flag:
-        commands_string = input('Enter your command:')
-        flag_serching_command = False
+        commands_string = input(
+            'Enter your command (hello, add, change, phone, show all):').lstrip()
+        flag_searching_command = False
         for i in COMMANDS.keys():
-            if commands_string.lower().find(i) == 0:
+            # if commands_string.lower().find(i) == 0:
+            if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
                 list_command_name_phone = commands_string[len(i)+1:].split()
-                flag_serching_command = True
+                flag_searching_command = True
                 break
-        if flag_serching_command == False:
+        if flag_searching_command == False:
             continue
         func_handler = COMMANDS[command]
         func_handler(list_command_name_phone)
