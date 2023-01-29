@@ -26,14 +26,19 @@ def change_phone(x2, x3):
 
 def phone(x2, x3=None):
     assert isinstance(x2, str)
+    for i in list_name_phone
+    if x2 == i['name']:
+        list_name_phone: print(f"Phone of {x2} is {i['phone']}")
+
+
+def show_all(x2=None, x3=None):
     for i in list_name_phone:
-        if x2 == i['name']:
-            print(f"Phone of {x2} is {i['phone']}")
+        print(f"name: {i['name']}, phone: {i['phone']}")
 
 
 def main():
     COMMANDS = {'hello': hello, 'add': add_name_phone,
-                'change': change_phone, 'phone': phone}
+                'change': change_phone, 'phone': phone, 'show all': show_all}
     flag = True
     while flag:
         commands_list = input('Enter your command:').split()
@@ -44,10 +49,11 @@ def main():
         else:
             if commands_list[0] == 'exit':
                 flag = False
+            COMMANDS = {'hello': hello, 'add': add_name_phone,
+                        'change': change_phone, 'phone': phone}
             result_comand = COMMANDS[commands_list[0].lower()]
             result_comand(commands_list[1] if len(commands_list) >= 2 else None,
                           commands_list[2] if len(commands_list) >= 3 else None)
-            print(list_name_phone)
 
 
 if __name__ == '__main__':
