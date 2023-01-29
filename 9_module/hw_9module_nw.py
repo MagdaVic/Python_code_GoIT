@@ -7,9 +7,10 @@ def hello(x2=None, x3=None):
     print("How can I help you?")
 
 
-def add_name_phone(x2, x3):
-    assert isinstance(x2, str)
-    assert isinstance(x3, str)
+def add_name_phone(list):
+    x2, x3, *x0 = list
+    # assert isinstance(x2, str)
+    # assert isinstance(x3, str)
     if {'name': x2, 'phone': x3} not in list_name_phone:
         list_name_phone.append({'name': x2, 'phone': x3})
         print(f'New contacts (name: {x2}, phone: {x3}) are added')
@@ -26,9 +27,9 @@ def change_phone(x2, x3):
 
 def phone(x2, x3=None):
     assert isinstance(x2, str)
-    for i in list_name_phone
-    if x2 == i['name']:
-        list_name_phone: print(f"Phone of {x2} is {i['phone']}")
+    for i in list_name_phone:
+        if x2 == i['name']:
+            list_name_phone: print(f"Phone of {x2} is {i['phone']}")
 
 
 def show_all(x2=None, x3=None):
@@ -50,8 +51,9 @@ def main():
             if commands_list[0] == 'exit':
                 flag = False
             result_comand = COMMANDS[commands_list[0].lower()]
-            result_comand(commands_list[1] if len(commands_list) >= 2 else None,
-                          commands_list[2] if len(commands_list) >= 3 else None)
+            commands_list.pop(0)
+            result_comand(commands_list)
+            print(list_name_phone)
 
 
 if __name__ == '__main__':
