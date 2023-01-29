@@ -37,17 +37,14 @@ def show_all(output_list):
 def main():
     COMMANDS = {'hello': hello, 'add': add_name_phone,
                 'change': change_phone, 'phone': phone, 'show all': show_all}
-    flag = True
-    while flag:
+    while True:
         commands_string = input(
             'Enter your command (hello, add, change, phone, show all):').lstrip()
         for i in COMMANDS.keys():
-            # if commands_string.lower().find(i) == 0:
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
-                list_command_name_phone = commands_string[len(i)+1:].split()
-                func_handler = COMMANDS[command]
-                func_handler(list_command_name_phone)
+                command_parametres_list = commands_string[len(i)+1:].split()
+                COMMANDS[command](command_parametres_list)
                 break
         print(list_name_phone)
 
