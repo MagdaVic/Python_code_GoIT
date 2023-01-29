@@ -1,13 +1,37 @@
 import sys
-# x1 - command string
-# x2 - first string after command (name)
-# x3 - second string after command (phone)
+# x1 - command value
+# x2 - first value after command (name)
+# x3 - second value after command (phone)
+# *x0 - possible value in the end of command string, that user can input
+
+
+def input_error_name(func):
+    def inner(output_list):
+        try:
+            x2, *x0 = output_list
+        except ValueError:
+            print('Enter user name')
+        else:
+            return func(output_list)
+    return inner
+
+
+def input_error_name_phone(func):
+    def inner(output_list):
+        try:
+            x2, x3, *x0 = output_list
+        except ValueError:
+            print('Give me name and phone please')
+        else:
+            return func(output_list)
+    return inner
 
 
 def hello(output_list):
     print("How can I help you?")
 
 
+@input_error_name_phone
 def add_name_phone(output_list):
     x2, x3, *x0 = output_list
     if {'name': x2, 'phone': x3} not in list_name_phone:
@@ -15,6 +39,7 @@ def add_name_phone(output_list):
         print(f'New contacts (name: {x2}, phone: {x3}) are added')
 
 
+@input_error_name_phone
 def change_phone(output_list):
     x2, x3, *x0 = output_list
     for i in list_name_phone:
@@ -23,6 +48,7 @@ def change_phone(output_list):
     print(f'New phone of {x2} is changed')
 
 
+@input_error_name
 def phone(output_list):
     x2, *x0 = output_list
     for i in list_name_phone:
@@ -51,7 +77,6 @@ def main():
                 command_parametres_list = commands_string[len(i)+1:].split()
                 COMMANDS[command](command_parametres_list)
                 break
-        print(list_name_phone)
 
 
 if __name__ == '__main__':
