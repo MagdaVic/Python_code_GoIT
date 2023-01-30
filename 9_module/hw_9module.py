@@ -6,25 +6,25 @@ import sys
 
 
 def input_error_name(func):
-    def inner(output_list):
+    def wrapper(output_list):
         try:
             x2, *x0 = output_list
         except ValueError:
             print('Enter user name')
         else:
             return func(output_list)
-    return inner
+    return wrapper
 
 
 def input_error_name_phone(func):
-    def inner(output_list):
+    def wrapper(output_list):
         try:
             x2, x3, *x0 = output_list
         except ValueError:
             print('Give me name and phone please')
         else:
             return func(output_list)
-    return inner
+    return wrapper
 
 
 def hello(output_list):
