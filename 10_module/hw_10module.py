@@ -41,14 +41,22 @@ class Record:
         return self.phones
 
 
+class AddressBook(UserDict):
+    def add_record(self, record):
+        self.data[record.name.value] = record
+        return self.data
+
+
 name1 = Name('Bob')
 print(name1.value)
+name2 = Name('Dal')
 phone1 = Phone('234637373')
 print(phone1.value)
 phone2 = Phone('3647474')
 phone3 = Phone('364747555')
 phone4 = Phone('1')
 record1 = Record(name1, phone1)
+record2 = Record(name2, phone2)
 print(record1.name)
 record1.add_phones(phone2)
 record1.add_phones(phone3)
@@ -57,3 +65,6 @@ record1.change_phones(phone1, phone4)
 print(record1.list_phones())
 record1.remove_phones(phone4)
 print(record1.list_phones())
+book1 = AddressBook()
+print(book1.add_record(record1))
+print(book1.add_record(record2))
