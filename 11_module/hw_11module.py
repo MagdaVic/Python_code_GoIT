@@ -1,5 +1,6 @@
 from collections import UserDict
 import re 
+from datetime import datetime
 
 
 class Field:
@@ -34,18 +35,34 @@ class Phone(Field):
         if re.search(r'^\+?3?8?(0[\s\.-]?\d{2}[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2})$',value):
             self._value = value
         else:
-            raise Exception ('Phone number must have format and consist only from numbers: +380 XX XXX XX XX')
+            raise Exception ('Phone number must consist only from numbers and have format: +380 XX XXX XX XX or +380-XX-XXX-XX-XX')
 
-# class Birthday:
+class Birthday(Field):
+    def __init__(self, value):
+        self.value=value
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if re.search(r'\d{2}\.\d{2}\.\d{4}',value):
+            self._value = value
+        else:
+            raise Exception ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
 
 
 
 class Record:
-    def __init__(self, name, phone):
+    def __init__(self, name, phone=None, birthday=None):
         self.name = name
         self.phones = []
         if phone:
             self.phones.append(phone)
+        if birthday:
+            self.birthday=birthday
+        
 
     def add_phones(self, phone):
         if phone not in self.phones:
@@ -65,6 +82,13 @@ class Record:
 
     def list_phones(self):
         return self.phones
+
+    def days_to_birthday(self,birthday):
+        self.birthday=datetime.strptime(birthday, '%d.%m.%Y')
+        current_datetime = datetime.now()
+        birthday_in_current_year=datetime(year=2012, month=1, day=7, hour=14)
+
+    
 
 
 class AddressBook(UserDict):
