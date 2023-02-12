@@ -85,8 +85,10 @@ class Record:
 
     def days_to_birthday(self,birthday):
         self.birthday=datetime.strptime(birthday, '%d.%m.%Y')
-        current_datetime = datetime.now()
-        birthday_in_current_year=datetime(year=2012, month=1, day=7, hour=14)
+        now = datetime.now()
+        delta1 = datetime(now.year, self.birthday.month, self.birthday.day)
+        delta2 = datetime(now.year+1, self.birthday.month, self.birthday.day)
+        return ((delta1 if delta1 > now else delta2) - now).days
 
     
 
