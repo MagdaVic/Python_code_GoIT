@@ -35,7 +35,7 @@ class Phone(Field):
         if re.search(r'^\+?3?8?(0[\s\.-]?\d{2}[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2})$',value):
             self._value = value
         else:
-            raise Exception ('Phone number must consist only from numbers and have format: +380 XX XXX XX XX or +380-XX-XXX-XX-XX')
+            raise Exception ("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
 
 class Birthday(Field):
     def __init__(self, value):
