@@ -84,7 +84,7 @@ class Record:
         return self.phones
 
     def days_to_birthday(self,birthday):
-        self.birthday=datetime.strptime(birthday, '%d.%m.%Y')
+        self.birthday=datetime.strptime(birthday.value, '%d.%m.%Y')
         now = datetime.now()
         delta1 = datetime(now.year, self.birthday.month, self.birthday.day)
         delta2 = datetime(now.year+1, self.birthday.month, self.birthday.day)
@@ -133,8 +133,22 @@ phone1 = Phone('+380639579750')
 print(phone1.value)
 phone2 = Phone('0639579750')
 phone3 = Phone('0639579000')
-
-
+birthday1=Birthday('04.05.1868')
+print(birthday1.value)
+birthday2=Birthday('08.05.1978')
+birthday3=Birthday('08.12.1986')
+record1=Record(name1, phone1,birthday1)
+print(record1.days_to_birthday(birthday1))
+print(record1.birthday)
+record2=Record(name2, phone2)
+record3=Record(name3, phone2,birthday2)
+book1=AddressBook()
+print(book1)
+book1.add_record(record1)
+book1.add_record(record2)
+book1.add_record(record3)
+print(book1)
+print(book1.get_page(2))
 
 
 
