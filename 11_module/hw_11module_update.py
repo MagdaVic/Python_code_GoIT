@@ -44,7 +44,7 @@ class Phone(Field):
         if re.search(r'^\+?3?8?(0[\s\.-]?\d{2}[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2})$',value):
             self._value = value
         else:
-            raise Exception ("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
+            raise Exception("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
     
 
 
@@ -83,19 +83,19 @@ class Record:
         return f'Phones: {self.phones}'
         
 
-    def add_phones(self, phone):
+    def add_phones(self, phone:Phone):
         if phone not in self.phones:
             self.phones.append(phone)
 
     def change_phones(self, phone, phone_new):
         for count, ele in enumerate(self.phones):
-            if ele == phone:
+            if ele.value == phone:
                 self.phones[count] = phone_new
                 break
 
     def remove_phones(self, phone):
         for count, ele in enumerate(self.phones):
-            if ele == phone:
+            if ele.value == phone:
                 self.phones.remove(ele)
                 break
 
@@ -144,25 +144,24 @@ class AddressBook(UserDict):
                 break
             
 
-# x1 - command value
-# x2 - first value after command (name)
-# x3 - second value after command (phone)
-# *x0 - possible value in the end of command string, that user can input
 
+# name - first value after command (name)
+# *other - possible value in the end of command string, that user can input
 
-# def input_error_name(func):
-#     def wrapper(output_list):
-#         try:
-#             x2, *x0 = output_list
-#         except ValueError:
-#             print('Enter user name')
-#         else:
-#             return func(output_list)
-#     return wrapper
+def input_error_name(func):
+    def wrapper(output_list,address_book):
+        try:
+            name, *other = output_list
+        except ValueError:
+            print('Enter user name')
+        else:
+            return func(output_list,address_book)
+    return wrapper
 
 # command  - command value
 # name - first value after command (name)
 # phone - second value after command (phone)
+# phone_new - third value after command (phone_new for changing phones)
 # *other - possible value in the end of command string, that user can input
 
 def input_error_name_phone(func):
@@ -175,21 +174,26 @@ def input_error_name_phone(func):
             return func(output_list,address_book)
     return wrapper
 
+def input_error_name_phone_phone_new(func):
+    def wrapper(output_list,address_book):
+        try:
+            name, phone, phone_new, *other = output_list
+        except ValueError:
+            print('Give me name, phone and new phone please')
+        else:
+            return func(output_list,address_book)
+    return wrapper
 
 def hello(output_list):
     print("How can I help you?")
 
-# command  - command value
-# name - first value after command (name)
-# phone - second value after command (phone)
-# *other - possible value in the end of command string, that user can input
 
 @input_error_name_phone
 def add_name_phone(output_list, address_book:AddressBook):
     name, phone, *other = output_list
     record = address_book.get(name)
     if record:
-        record.add_phones(phone)
+        record.add_phones(Phone(phone))
         print(address_book)
         print(f'New phone: {phone} of name: {name} is added')
     else:
@@ -198,14 +202,23 @@ def add_name_phone(output_list, address_book:AddressBook):
         print(f'New contacts (name: {name}, phone: {phone}) are added')
 
 
-# @input_error_name_phone
-# def change_phone(output_list, address_book:AddressBook):
-#     x2, x3, *x0 = output_list
-#     for i in list_name_phone:
-#         if x2 == i['name']:
-#             i['phone'] = x3
-#     print(f'New phone of {x2} is changed')
+@input_error_name_phone_phone_new
+def change_phone(output_list, address_book:AddressBook):
+    name, phone, phone_new, *other = output_list
+    record = address_book.get(name)
+    if record:
+        record.change_phones(phone, Phone(phone_new))
+        print(record)
+        print(address_book)
+        print(f'Phone {phone} of {name} is changed. New phone is {phone_new} ')
 
+@input_error_name_phone       
+def remove_phone(output_list, address_book:AddressBook):
+    name, phone, *other = output_list
+    record = address_book.get(name)
+    if record:
+        record.add_phones(Phone(phone))
+        print(address_book)
 
 # @input_error_name
 # def phone(output_list):
@@ -228,7 +241,8 @@ def main():
     address_book=AddressBook()
     
 
-    COMMANDS = {'hello': hello, 'add': add_name_phone} #,'change': change_phone, 'phone': phone, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
+    COMMANDS = {'hello': hello, 'add': add_name_phone,'change': change_phone, 'remove phone': remove_phone} 
+    #, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
     while True:
         commands_string = input(
             'Enter your command (hello, add, change, phone, show all, good bye, close, exit):').lstrip()
@@ -247,30 +261,7 @@ if __name__ == '__main__':
 
 
 
-# name1=Name('Bob')
-# print(name1.value)
-# name2=Name('Ggg')
-# name3=Name('aaa')
-# phone1 = Phone('+380639579750')
-# print(phone1.value)
-# phone2 = Phone('0639579750')
-# phone3 = Phone('0639579000')
-# birthday1=Birthday('04.05.1868')
-# print(birthday1.value)
-# birthday2=Birthday('08.05.1978')
-# birthday3=Birthday('08.12.1986')
-# record1=Record(name1, phone1,birthday1)
-# print(record1.days_to_birthday(birthday1))
-# print(record1.birthday)
-# record2=Record(name2, phone2)
-# record3=Record(name3, phone2,birthday2)
-# book1=AddressBook()
-# print(book1)
-# book1.add_record(record1)
-# book1.add_record(record2)
-# book1.add_record(record3)
-# print(book1)
-# print(book1.get_page(2))
+
 
 
 
