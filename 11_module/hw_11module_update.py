@@ -66,10 +66,6 @@ class Birthday(Field):
         else:
             raise Exception ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
     
-
-
-
-
 class Record:
     def __init__(self, name:Name, phone:Phone=None, birthday:Birthday=None):
         self.name = name
@@ -80,7 +76,7 @@ class Record:
             self.birthday=birthday
 
     def __repr__(self) -> str:
-        return f'Phones: {self.phones}'
+        return f'Name: {self.name}, Phones: {self.phones}'
         
 
     def add_phones(self, phone:Phone):
@@ -110,8 +106,6 @@ class Record:
         return ((delta1 if delta1 > now else delta2) - now).days
 
  
-
-
 class AddressBook(UserDict):
     def __repr__(self):
         return f'{self.data}'
@@ -133,7 +127,7 @@ class AddressBook(UserDict):
         if lst_temp:
             yield lst_temp    
     
-    def get_page(self, n=2):
+    def show_all_limit(self, n=2):
         step = self.iterator(n)
         for i in range(len(self.data)):
             try:
@@ -148,6 +142,7 @@ class AddressBook(UserDict):
 # name - first value after command (name)
 # phone - second value after command (phone)
 # phone_new - third value after command (phone_new for changing phones)
+# n - quantity of viewes in adress book
 # *other - possible value in the end of command string, that user can input
 
 def input_error_name(func):
@@ -180,7 +175,7 @@ def input_error_name_phone_phone_new(func):
             return func(output_list,address_book)
     return wrapper
 
-def hello(output_list):
+def hello(output_list, address_book:AddressBook):
     print("How can I help you?")
 
 
@@ -225,9 +220,13 @@ def remove_phone(output_list, address_book:AddressBook):
 #             print(f"Phone of {x2} is {i['phone']}")
 
 
-# def show_all(output_list):
-#     for i in list_name_phone:
-#         print(f"name: {i['name']}, phone: {i['phone']}")
+def show_all(output_list, address_book:AddressBook):
+    if output_list:
+        n,*other=output_list
+        address_book.show_all_limit(int(n))
+    else:
+        address_book.show_all_limit()
+
 
 
 # def exit_from_chat(output_list):
@@ -238,8 +237,8 @@ def main():
     address_book=AddressBook()
     
 
-    COMMANDS = {'hello': hello, 'add': add_name_phone,'change': change_phone, 'remove phone': remove_phone} 
-    #, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
+    COMMANDS = {'hello': hello, 'add': add_name_phone,'change': change_phone, 'remove phone': remove_phone,'show all': show_all} 
+    # , 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
     while True:
         commands_string = input(
             'Enter your command (hello, add, change, phone, show all, good bye, close, exit):').lstrip()

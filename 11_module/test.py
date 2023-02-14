@@ -12,3 +12,6 @@ def days_to_birthday(birthday):
 birthday='10.02.1976'
 
 print(days_to_birthday(birthday))
+
+x1,*x2=[]
+print(x1)
