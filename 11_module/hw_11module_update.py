@@ -12,6 +12,9 @@ class Field:
 class Name(Field):
     def __init__(self, value):
         self.value=value
+    
+    def __repr__(self):
+        return f'{self.value}'
 
     @property
     def value(self):
@@ -21,14 +24,16 @@ class Name(Field):
     def value(self, value):
         self._value = value
 
-    def __repr__(self):
-        return f'{self.value}'
+
 
 
 
 class Phone(Field):
     def __init__(self, value):
         self.value=value
+    
+    def __repr__(self):
+        return f'{self.value}'
 
     @property
     def value(self):
@@ -41,12 +46,14 @@ class Phone(Field):
         else:
             raise Exception ("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
     
-    def __repr__(self):
-        return f'{self.value}'
+
 
 class Birthday(Field):
     def __init__(self, value):
         self.value=value
+
+    def __repr__(self):
+        return f'{self.value}'
 
     @property
     def value(self):
@@ -59,8 +66,7 @@ class Birthday(Field):
         else:
             raise Exception ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
     
-    def __repr__(self):
-        return f'{self.value}'
+
 
 
 
@@ -154,24 +160,32 @@ class AddressBook(UserDict):
 #             return func(output_list)
 #     return wrapper
 
+# command  - command value
+# name - first value after command (name)
+# phone - second value after command (phone)
+# *other - possible value in the end of command string, that user can input
 
-# def input_error_name_phone(func):
-#     def wrapper(output_list):
-#         try:
-#             x2, x3, *x0 = output_list
-#         except ValueError:
-#             print('Give me name and phone please')
-#         else:
-#             return func(output_list)
-#     return wrapper
+def input_error_name_phone(func):
+    def wrapper(output_list,address_book):
+        try:
+            name, phone, *other = output_list
+        except ValueError:
+            print('Give me name and phone please')
+        else:
+            return func(output_list,address_book)
+    return wrapper
 
 
 def hello(output_list):
     print("How can I help you?")
 
+# command  - command value
+# name - first value after command (name)
+# phone - second value after command (phone)
+# *other - possible value in the end of command string, that user can input
 
-# @input_error_name_phone
-def add_name_phone(output_list,address_book:AddressBook):
+@input_error_name_phone
+def add_name_phone(output_list, address_book:AddressBook):
     name, phone, *other = output_list
     record = address_book.get(name)
     if record:
@@ -211,7 +225,7 @@ def add_name_phone(output_list,address_book:AddressBook):
 
 
 def main():
-    adress_book=AddressBook()
+    address_book=AddressBook()
     
 
     COMMANDS = {'hello': hello, 'add': add_name_phone} #,'change': change_phone, 'phone': phone, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
@@ -222,7 +236,7 @@ def main():
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
                 command_parametres_list = commands_string[len(i)+1:].split()
-                COMMANDS[command](command_parametres_list, adress_book)
+                COMMANDS[command](command_parametres_list, address_book)
                 break
 
 
