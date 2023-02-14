@@ -21,6 +21,9 @@ class Name(Field):
     def value(self, value):
         self._value = value
 
+    def __repr__(self):
+        return f'{self.value}'
+
 
 
 class Phone(Field):
@@ -37,6 +40,9 @@ class Phone(Field):
             self._value = value
         else:
             raise Exception ("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
+    
+    def __repr__(self):
+        return f'{self.value}'
 
 class Birthday(Field):
     def __init__(self, value):
@@ -52,6 +58,9 @@ class Birthday(Field):
             self._value = value
         else:
             raise Exception ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+    
+    def __repr__(self):
+        return f'{self.value}'
 
 
 
@@ -63,6 +72,9 @@ class Record:
             self.phones.append(phone)
         if birthday:
             self.birthday=birthday
+
+    def __repr__(self) -> str:
+        return f'Phones: {self.phones}'
         
 
     def add_phones(self, phone):
@@ -91,12 +103,12 @@ class Record:
         delta2 = datetime(now.year+1, self.birthday.month, self.birthday.day)
         return ((delta1 if delta1 > now else delta2) - now).days
 
-    def __repr__(self) -> str:
-        return f'Name: {self.name.value}, Phones:{self.phones}, Birthday:{self.birthday}' 
+ 
 
 
 class AddressBook(UserDict):
-
+    def __repr__(self):
+        return f'{self.data}'
 
     def add_record(self, record:Record):
         self.data[record.name.value] = record
@@ -163,12 +175,13 @@ def add_name_phone(output_list,address_book:AddressBook):
     name, phone, *other = output_list
     record = address_book.get(name)
     if record:
-        record.add_phones(Phone(phone))
-        print(record.list_phones())
+        record.add_phones(phone)
+        print(address_book)
+        print(f'New phone: {phone} of name: {name} is added')
     else:
-        a=address_book.add_record(Record(Name(name),Phone(phone)))
-        print(a)
-    print(f'New contacts (name: {name}, phone: {phone}) are added')
+        address_book.add_record(Record(Name(name),Phone(phone)))
+        print(address_book)
+        print(f'New contacts (name: {name}, phone: {phone}) are added')
 
 
 # @input_error_name_phone
@@ -199,6 +212,7 @@ def add_name_phone(output_list,address_book:AddressBook):
 
 def main():
     adress_book=AddressBook()
+    
 
     COMMANDS = {'hello': hello, 'add': add_name_phone} #,'change': change_phone, 'phone': phone, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
     while True:
