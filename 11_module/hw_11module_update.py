@@ -87,7 +87,7 @@ class Record:
         if phone not in self.phones:
             self.phones.append(phone)
 
-    def change_phones(self, phone, phone_new):
+    def change_phones(self, phone, phone_new:Phone):
         for count, ele in enumerate(self.phones):
             if ele.value == phone:
                 self.phones[count] = phone_new
@@ -144,8 +144,10 @@ class AddressBook(UserDict):
                 break
             
 
-
+# command  - command value
 # name - first value after command (name)
+# phone - second value after command (phone)
+# phone_new - third value after command (phone_new for changing phones)
 # *other - possible value in the end of command string, that user can input
 
 def input_error_name(func):
@@ -157,12 +159,6 @@ def input_error_name(func):
         else:
             return func(output_list,address_book)
     return wrapper
-
-# command  - command value
-# name - first value after command (name)
-# phone - second value after command (phone)
-# phone_new - third value after command (phone_new for changing phones)
-# *other - possible value in the end of command string, that user can input
 
 def input_error_name_phone(func):
     def wrapper(output_list,address_book):
@@ -195,7 +191,7 @@ def add_name_phone(output_list, address_book:AddressBook):
     if record:
         record.add_phones(Phone(phone))
         print(address_book)
-        print(f'New phone: {phone} of name: {name} is added')
+        print(f'New phone {phone} of {name} is added')
     else:
         address_book.add_record(Record(Name(name),Phone(phone)))
         print(address_book)
@@ -217,8 +213,9 @@ def remove_phone(output_list, address_book:AddressBook):
     name, phone, *other = output_list
     record = address_book.get(name)
     if record:
-        record.add_phones(Phone(phone))
+        record.remove_phones(phone)
         print(address_book)
+        print(f'Phone {phone} of {name} is removed')
 
 # @input_error_name
 # def phone(output_list):
