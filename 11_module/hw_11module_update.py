@@ -4,6 +4,7 @@ from datetime import datetime
 import sys
 
 
+
 class Field:
     def __init__(self):
         self._value = None
@@ -72,11 +73,10 @@ class Record:
         self.phones = []
         if phone:
             self.phones.append(phone)
-        if birthday:
-            self.birthday=birthday
+        self.birthday=birthday
 
     def __repr__(self) -> str:
-        return f'Name: {self.name}, Phones: {self.phones}'
+        return f'Name: {self.name}, Phones: {self.phones}, Birthday:{self.birthday}'
         
 
     def add_phones(self, phone:Phone):
@@ -97,6 +97,10 @@ class Record:
 
     def list_phones(self):
         return self.phones
+
+    def add_birthday(self,birthday:Birthday):
+        print('2')
+        self.birthday=birthday
 
     def days_to_birthday(self,birthday):
         self.birthday=datetime.strptime(birthday.value, '%d.%m.%Y')
@@ -142,6 +146,7 @@ class AddressBook(UserDict):
 # name - first value after command (name)
 # phone - second value after command (phone)
 # phone_new - third value after command (phone_new for changing phones)
+# birthday - birthday of person, econd value after command in func add_name_birthday
 # n - quantity of viewes in adress book
 # *other - possible value in the end of command string, that user can input
 
@@ -161,6 +166,16 @@ def input_error_name_phone(func):
             name, phone, *other = output_list
         except ValueError:
             print('Give me name and phone please')
+        else:
+            return func(output_list,address_book)
+    return wrapper
+
+def input_error_name_birthday(func):
+    def wrapper(output_list,address_book):
+        try:
+            name, birthday, *other = output_list
+        except ValueError:
+            print('Give me name and birthday please')
         else:
             return func(output_list,address_book)
     return wrapper
@@ -192,6 +207,15 @@ def add_name_phone(output_list, address_book:AddressBook):
         print(address_book)
         print(f'New contacts (name: {name}, phone: {phone}) are added')
 
+@input_error_name_birthday
+def add_name_birthday(output_list, address_book:AddressBook):
+    name, birthday, *other = output_list
+    record = address_book.get(name)
+    if record:
+        record.add_birthday(Birthday(birthday))
+        print(address_book)
+        print(f'Birthday of {name} is added')
+
 
 @input_error_name_phone_phone_new
 def change_phone(output_list, address_book:AddressBook):
@@ -199,7 +223,6 @@ def change_phone(output_list, address_book:AddressBook):
     record = address_book.get(name)
     if record:
         record.change_phones(phone, Phone(phone_new))
-        print(record)
         print(address_book)
         print(f'Phone {phone} of {name} is changed. New phone is {phone_new} ')
 
@@ -212,13 +235,6 @@ def remove_phone(output_list, address_book:AddressBook):
         print(address_book)
         print(f'Phone {phone} of {name} is removed')
 
-# @input_error_name
-# def phone(output_list):
-#     x2, *x0 = output_list
-#     for i in list_name_phone:
-#         if x2 == i['name']:
-#             print(f"Phone of {x2} is {i['phone']}")
-
 
 def show_all(output_list, address_book:AddressBook):
     if output_list:
@@ -229,16 +245,15 @@ def show_all(output_list, address_book:AddressBook):
 
 
 
-# def exit_from_chat(output_list):
-#     sys.exit('Good bye!')
+def exit_from_chat(output_list,address_book:AddressBook):
+    sys.exit('Good bye!')
 
 
 def main():
     address_book=AddressBook()
     
 
-    COMMANDS = {'hello': hello, 'add': add_name_phone,'change': change_phone, 'remove phone': remove_phone,'show all': show_all} 
-    # , 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
+    COMMANDS = {'hello': hello,'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone, 'remove phone': remove_phone,'show all': show_all,'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
     while True:
         commands_string = input(
             'Enter your command (hello, add, change, phone, show all, good bye, close, exit):').lstrip()
