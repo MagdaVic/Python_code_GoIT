@@ -25,10 +25,6 @@ class Name(Field):
     def value(self, value):
         self._value = value
 
-
-
-
-
 class Phone(Field):
     def __init__(self, value):
         self.value=value
@@ -45,10 +41,8 @@ class Phone(Field):
         if re.search(r'^\+?3?8?(0[\s\.-]?\d{2}[\s\.-]?\d{3}[\s\.-]?\d{2}[\s\.-]?\d{2})$',value):
             self._value = value
         else:
-            raise Exception("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
+            raise PhoneError ("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38")
     
-
-
 class Birthday(Field):
     def __init__(self, value):
         self.value=value
@@ -65,8 +59,8 @@ class Birthday(Field):
         if re.search(r'\d{2}\.\d{2}\.\d{4}',value):
             self._value = value
         else:
-            raise Exception ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
-    
+            raise BirthdayError ("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+
 class Record:
     def __init__(self, name:Name, phone:Phone=None, birthday:Birthday=None):
         self.name = name
@@ -140,6 +134,15 @@ class AddressBook(UserDict):
                 input('Press enter for next page: ')
             except StopIteration:
                 break
+
+class PhoneError(Exception):
+    """Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38"""
+    pass
+
+class BirthdayError(Exception):
+    """Birthday must have format 'DD.MM.YYYY' and consist only from numbers"""
+    pass
+
             
 
 # command  - command value
@@ -150,22 +153,13 @@ class AddressBook(UserDict):
 # n - quantity of viewes in adress book
 # *other - possible value in the end of command string, that user can input
 
-def input_error_name(func):
-    def wrapper(output_list,address_book):
-        try:
-            name, *other = output_list
-        except ValueError:
-            print('Enter user name')
-        else:
-            return func(output_list,address_book)
-    return wrapper
 
 def input_error_name_phone(func):
     def wrapper(output_list,address_book):
         try:
             name, phone, *other = output_list
         except ValueError:
-            print('Give me name and phone please')
+            print('Give me name and phone please. Format of phone must be +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX')
         else:
             return func(output_list,address_book)
     return wrapper
@@ -175,7 +169,7 @@ def input_error_name_birthday(func):
         try:
             name, birthday, *other = output_list
         except ValueError:
-            print('Give me name and birthday please')
+            print("Give me name and birthday please. Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
         else:
             return func(output_list,address_book)
     return wrapper
@@ -185,7 +179,7 @@ def input_error_name_phone_phone_new(func):
         try:
             name, phone, phone_new, *other = output_list
         except ValueError:
-            print('Give me name, phone and new phone please')
+            print('Give me name, phone and new phone please. Format new phone must be +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX')
         else:
             return func(output_list,address_book)
     return wrapper
@@ -256,7 +250,7 @@ def main():
     COMMANDS = {'hello': hello,'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone, 'remove phone': remove_phone,'show all': show_all,'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat}
     while True:
         commands_string = input(
-            'Enter your command (hello, add, change, phone, show all, good bye, close, exit):').lstrip()
+            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, good bye, close, exit):').lstrip()
         for i in COMMANDS.keys():
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
