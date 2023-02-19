@@ -10,11 +10,12 @@ class Person:
 
 
 class Contacts:
-    def __init__(self, filename: str, contacts: list[Person] = None):
+    def __init__(self, filename: str, contacts: list[Person] = None, count_save=0):
         if contacts is None:
             contacts = []
         self.filename = filename
         self.contacts = contacts
+        self.count_save = count_save
 
     def save_to_file(self):
         with open(filename, 'wb') as fh:
@@ -24,6 +25,11 @@ class Contacts:
         with open(filename, 'rb') as fh:
             self_unpack = pickle.load(fh)
             return self_unpack
+
+    def __getstate__(self):
+        attributes = self.__dict__.copy()
+        attributes['count_save'] = self.count_save + 1
+        return attributes
 
 
 contacts = [
@@ -42,13 +48,15 @@ contacts = [
 ]
 filename = r'12_module\user_class.txt'
 persons = Contacts(filename, contacts)
-print(persons)
-print(persons.contacts)
 persons.save_to_file()
-person_from_file = persons.read_from_file()
-print(persons == person_from_file)  # False
-print(persons.contacts[0] == person_from_file.contacts[0])  # False
-print(persons.contacts[0].name == person_from_file.contacts[0].name)  # True
-print(persons.contacts[0].email == person_from_file.contacts[0].email)  # True
-print(persons.contacts[0].phone == person_from_file.contacts[0].phone)  # True
+first = persons.read_from_file()
+first.save_to_file()
+second = first.read_from_file()
+second.save_to_file()
+third = second.read_from_file()
+
+print(persons.count_save)  # 0
+print(first.count_save)  # 1
+print(second.count_save)  # 2
+print(third.count_save)  # 3
 print(persons.__dict__)
