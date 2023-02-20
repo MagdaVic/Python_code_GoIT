@@ -301,19 +301,21 @@ def exit_from_chat(output_list, address_book: AddressBook):
 def write_contacts_to_file(output_list, address_book: AddressBook):
     filename, *other = output_list
     address_book.save_to_file(filename)
+    print('File is saved')
 
 
 @input_error_filename
-def load_contacts_from_file(output_list, address_book: AddressBook):
+def read_contacts_from_file(output_list, address_book: AddressBook):
     filename, *other = output_list
     address_book.read_from_file(filename)
+    print('File is readed')
 
 
 def main():
     address_book = AddressBook()
 
     COMMANDS = {'hello': hello, 'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone,
-                'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': load_contacts_from_file}
+                'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': read_contacts_from_file}
     while True:
         commands_string = input(
             'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):').lstrip()
