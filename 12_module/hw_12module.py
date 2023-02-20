@@ -107,6 +107,15 @@ class Record:
         delta2 = datetime(now.year+1, self.birthday.month, self.birthday.day)
         return ((delta1 if delta1 > now else delta2) - now).days
 
+    def sub_find_name_phone(self, value):
+        if self.name.value.lower().find(value.lower()) != -1:
+            print(self)
+        else:
+            for i in self.phones:
+                if i.value.find(value) != -1:
+                    print(self)
+                    break
+
 
 class AddressBook(UserDict):
 
@@ -167,6 +176,7 @@ class BirthdayError(Exception):
 # birthday - birthday of person, econd value after command in func add_name_birthday
 # n - quantity of viewes in adress book
 # filename - the name of file to save instance of class Adress Book
+# value - sub of name or phone
 # *other - possible value in the end of command string, that user can input
 
 
@@ -263,6 +273,13 @@ def remove_phone(output_list, address_book: AddressBook):
         print(f'Phone {phone} of {name} is removed')
 
 
+def find_name_phone(output_list, address_book: AddressBook):
+    value, *other = output_list
+    for k, v in address_book.items():
+        record = address_book.get(k)
+        record.sub_find_name_phone(value)
+
+
 def show_all(output_list, address_book: AddressBook):
     if output_list:
         n, *other = output_list
@@ -291,10 +308,10 @@ def main():
     address_book = AddressBook()
 
     COMMANDS = {'hello': hello, 'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone,
-                'remove phone': remove_phone, 'show all': show_all, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from': load_contacts_from_file}
+                'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': load_contacts_from_file}
     while True:
         commands_string = input(
-            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, good bye, close, exit, save to, read from):').lstrip()
+            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):').lstrip()
         for i in COMMANDS.keys():
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
