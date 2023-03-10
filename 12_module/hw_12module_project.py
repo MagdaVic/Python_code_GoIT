@@ -320,10 +320,8 @@ def main():
                 'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': read_contacts_from_file}
     while True:
         command_completer = WordCompleter(COMMANDS.keys(),ignore_case=True)
-        # commands_string = input(
-        #     'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):').lstrip()
         commands_string = prompt(
-            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):',completer=command_completer)
+            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):',completer=command_completer,complete_while_typing=False).lstrip()
         for i in COMMANDS.keys():
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
