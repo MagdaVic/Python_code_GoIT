@@ -103,10 +103,6 @@ class Record:
         self.birthday = birthday
 
 
-# 23.04.1986
-# now 12.06.2023
-
-#
     def days_to_birthday(self):
         if self.birthday is None:
             return None
@@ -114,7 +110,7 @@ class Record:
         now = datetime.now()
         delta1 = datetime(now.year, birthday.month, birthday.day)
         delta2 = datetime(now.year+1, birthday.month, birthday.day)
-        return ((delta1 if delta1 > now else delta2) - now).days+1
+        return ((delta1 if delta1 > now else delta2) - now).days + 1
     
  
 
@@ -194,6 +190,7 @@ class BirthdayError(Exception):
 # n - quantity of viewes in adress book
 # filename - the name of file to save instance of class Adress Book
 # value - sub of name or phone
+# days_in - number of days before birthday
 # *other - possible value in the end of command string, that user can input
 
 
@@ -214,6 +211,16 @@ def input_error_name_birthday(func):
             name, birthday, *other = output_list
         except ValueError:
             print("Give me name and birthday please. Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+        else:
+            return func(output_list, address_book)
+    return wrapper
+
+def input_error_days_before_birthday(func):
+    def wrapper(output_list, address_book):
+        try:
+            days_in, *other = output_list
+        except ValueError:
+            print("Give integer number of days before birthday you want to check")
         else:
             return func(output_list, address_book)
     return wrapper
@@ -255,9 +262,12 @@ def add_name_phone(output_list, address_book: AddressBook):
         print(address_book)
         print(f'New phone {phone} of {name} is added')
     else:
-        address_book.add_record(Record(Name(name), Phone(phone)))
-        print(address_book)
-        print(f'New contacts (name: {name}, phone: {phone}) are added')
+        try:
+            address_book.add_record(Record(Name(name), Phone(phone)))
+            print(address_book)
+            print(f'New contacts (name: {name}, phone: {phone}) are added')
+        except PhoneError:
+            print("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
 
 
 @input_error_name_birthday
@@ -265,9 +275,21 @@ def add_name_birthday(output_list, address_book: AddressBook):
     name, birthday, *other = output_list
     record = address_book.get(name)
     if record:
-        record.add_birthday(Birthday(birthday))
-        print(address_book)
-        print(f'Birthday of {name} is added')
+        try:
+            record.add_birthday(Birthday(birthday))
+            print(address_book)
+            print(f'Birthday of {name} is added')
+        except BirthdayError:
+            print("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+
+@input_error_days_before_birthday
+def birthday_in_days(output_list, address_book: AddressBook):
+    days_in, *other = output_list
+    days_in=int(days_in)
+    for k, v in address_book.items():
+      record = address_book.get(k)
+      if days_in==record.days_to_birthday():
+          print(record)  
 
 
 @input_error_name_phone_phone_new
@@ -275,9 +297,12 @@ def change_phone(output_list, address_book: AddressBook):
     name, phone, phone_new, *other = output_list
     record = address_book.get(name)
     if record:
-        record.change_phones(phone, Phone(phone_new))
-        print(address_book)
-        print(f'Phone {phone} of {name} is changed. New phone is {phone_new} ')
+        try:
+            record.change_phones(phone, Phone(phone_new))
+            print(address_book)
+            print(f'Phone {phone} of {name} is changed. New phone is {phone_new} ')
+        except PhoneError:
+            print("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
 
 
 @input_error_name_phone
@@ -303,18 +328,6 @@ def show_all(output_list, address_book: AddressBook):
         address_book.show_all_limit(int(n))
     else:
         address_book.show_all_limit()
-
-def birthday_in_days(output_list, address_book: AddressBook):
-    days_in, *other = output_list
-    days_in=int(days_in)
-    for k, v in address_book.items():
-      record = address_book.get(k)
-      print(record.days_to_birthday())
-      if days_in==record.days_to_birthday():
-          print(record)   
-
-
-
 
 def exit_from_chat(output_list, address_book: AddressBook):
     sys.exit('Good bye!')
