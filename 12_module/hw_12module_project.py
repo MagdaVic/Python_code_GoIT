@@ -102,12 +102,22 @@ class Record:
     def add_birthday(self, birthday: Birthday):
         self.birthday = birthday
 
-    def days_to_birthday(self, birthday):
-        self.birthday = datetime.strptime(birthday.value, '%d.%m.%Y')
+
+# 23.04.1986
+# now 12.06.2023
+
+#
+    def days_to_birthday(self):
+        if self.birthday is None:
+            return None
+        birthday = datetime.strptime(self.birthday.value, '%d.%m.%Y')
         now = datetime.now()
-        delta1 = datetime(now.year, self.birthday.month, self.birthday.day)
-        delta2 = datetime(now.year+1, self.birthday.month, self.birthday.day)
-        return ((delta1 if delta1 > now else delta2) - now).days
+        delta1 = datetime(now.year, birthday.month, birthday.day)
+        delta2 = datetime(now.year+1, birthday.month, birthday.day)
+        return ((delta1 if delta1 > now else delta2) - now).days+1
+    
+ 
+
 
     def sub_find_name_phone(self, value):
         if self.name.value.lower().find(value.lower()) != -1:
@@ -294,6 +304,17 @@ def show_all(output_list, address_book: AddressBook):
     else:
         address_book.show_all_limit()
 
+def birthday_in_days(output_list, address_book: AddressBook):
+    days_in, *other = output_list
+    days_in=int(days_in)
+    for k, v in address_book.items():
+      record = address_book.get(k)
+      print(record.days_to_birthday())
+      if days_in==record.days_to_birthday():
+          print(record)   
+
+
+
 
 def exit_from_chat(output_list, address_book: AddressBook):
     sys.exit('Good bye!')
@@ -317,11 +338,11 @@ def main():
     address_book = AddressBook()
 
     COMMANDS = {'hello': hello, 'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone,
-                'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': read_contacts_from_file}
+                'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': read_contacts_from_file, 'birthday in days': birthday_in_days}
     while True:
         command_completer = WordCompleter(COMMANDS.keys(),ignore_case=True)
         commands_string = prompt(
-            'Enter your command (hello, add, add birthday, change phone, remove phone, show all, find, good bye, close, exit, save to, read from):',completer=command_completer,complete_while_typing=False).lstrip()
+            'Enter your command:',completer=command_completer,complete_while_typing=False).lstrip()
         for i in COMMANDS.keys():
             if commands_string.lower().startswith(i):
                 command = commands_string[:len(i)].lower()
