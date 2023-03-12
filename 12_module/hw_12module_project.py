@@ -48,6 +48,39 @@ class Phone(Field):
             raise PhoneError(
                 "Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38")
 
+class Address(Field):
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f'{self.value}'
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = value
+
+class Email(Field):
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f'{self.value}'
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if re.search(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+', value):
+            self._value = value
+        else:
+            raise EmailError(
+                "Email must have format (string1)@(string2).(2+characters)")
 
 class Birthday(Field):
     def __init__(self, value):
@@ -70,15 +103,19 @@ class Birthday(Field):
 
 
 class Record:
-    def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None):
+    def __init__(self, name: Name, phone: Phone = None, address: Address = None, email:Email=None,  birthday: Birthday = None):
         self.name = name
         self.phones = []
         if phone:
             self.phones.append(phone)
         self.birthday = birthday
+        self.address = address
+        self.email = email
+
+
 
     def __repr__(self) -> str:
-        return f'Name: {self.name}, Phones: {self.phones}, Birthday:{self.birthday}'
+        return f'Name: {self.name}, Phones: {self.phones}, Address: {self.address}, Email: {self.email}, Birthday: {self.birthday}'
 
     def add_phones(self, phone: Phone):
         if phone not in self.phones:
@@ -102,6 +139,11 @@ class Record:
     def add_birthday(self, birthday: Birthday):
         self.birthday = birthday
 
+    def add_email(self, email: Email):
+        self.email = email
+
+    def add_address(self, address: Address):
+        self.address = address
 
     def days_to_birthday(self):
         if self.birthday is None:
@@ -111,10 +153,7 @@ class Record:
         delta1 = datetime(now.year, birthday.month, birthday.day)
         delta2 = datetime(now.year+1, birthday.month, birthday.day)
         return ((delta1 if delta1 > now else delta2) - now).days + 1
-    
- 
-
-
+     
     def sub_find_name_phone(self, value):
         if self.name.value.lower().find(value.lower()) != -1:
             print(self)
@@ -123,7 +162,6 @@ class Record:
                 if i.value.find(value) != -1:
                     print(self)
                     break
-
 
 class AddressBook(UserDict):
 
@@ -176,6 +214,9 @@ class PhoneError(Exception):
     """Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38"""
     pass
 
+class EmailError(Exception):
+    """Email must have format (string1)@(string2).(2+characters)"""
+    pass
 
 class BirthdayError(Exception):
     """Birthday must have format 'DD.MM.YYYY' and consist only from numbers"""
@@ -211,6 +252,27 @@ def input_error_name_birthday(func):
             name, birthday, *other = output_list
         except ValueError:
             print("Give me name and birthday please. Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+        else:
+            return func(output_list, address_book)
+    return wrapper
+
+
+def input_error_name_email(func):
+    def wrapper(output_list, address_book):
+        try:
+            name, email, *other = output_list
+        except ValueError:
+            print("Give me name and email please. Email must have format (string1)@(string2).(2+characters)")
+        else:
+            return func(output_list, address_book)
+    return wrapper
+
+def input_error_name_address(func):
+    def wrapper(output_list, address_book):
+        try:
+            name, address, *other= output_list
+        except ValueError:
+            print("Give me name and address please")
         else:
             return func(output_list, address_book)
     return wrapper
@@ -258,12 +320,15 @@ def add_name_phone(output_list, address_book: AddressBook):
     name, phone, *other = output_list
     record = address_book.get(name)
     if record:
-        record.add_phones(Phone(phone))
-        print(address_book)
-        print(f'New phone {phone} of {name} is added')
+        try:
+            record.add_phones(Phone(phone))
+            print(address_book)
+            print(f'New phone {phone} of {name} is added')
+        except PhoneError:
+            print("Phone number must consist only from numbers and have format: +380 XX XXX XX XX, +380-XX-XXX-XX-XX, +380.XX.XXX.XX.XX or without '+38'")
     else:
         try:
-            address_book.add_record(Record(Name(name), Phone(phone)))
+            address_book.add_record(Record(name=Name(name), phone=Phone(phone)))
             print(address_book)
             print(f'New contacts (name: {name}, phone: {phone}) are added')
         except PhoneError:
@@ -281,6 +346,47 @@ def add_name_birthday(output_list, address_book: AddressBook):
             print(f'Birthday of {name} is added')
         except BirthdayError:
             print("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+    else:
+        try:
+            address_book.add_record(Record(name=Name(name), birthday=Birthday(birthday)))
+            print(address_book)
+            print(f'New contacts (name: {name}, birthday: {birthday}) are added')
+        except BirthdayError:
+            print("Birthday must have format 'DD.MM.YYYY' and consist only from numbers")
+
+@input_error_name_address
+def add_name_address(output_list, address_book: AddressBook):
+    name=output_list[0]
+    address=" ".join(output_list[1:])
+    record = address_book.get(name)
+    if record:
+        record.add_address(Address(address))
+        print(address_book)
+        print(f'Address of {name} is added')
+    else:
+        address_book.add_record(Record(name=Name(name), address=Address(address)))
+        print(address_book)
+        print(f'New contacts (name: {name}, address: {address}) are added')
+
+
+@input_error_name_email
+def add_name_email (output_list, address_book: AddressBook):
+    name, email, *other = output_list
+    record = address_book.get(name)
+    if record:
+        try:
+            record.add_email(Email(email))
+            print(address_book)
+            print(f'Email of {name} is added')
+        except EmailError:
+            print("Email must have format (string1)@(string2).(2+characters)")
+    else:
+        try:
+            address_book.add_record(Record(name=Name(name), email=Email(email)))
+            print(address_book)
+            print(f'New contacts (name: {name}, email: {email}) are added')
+        except EmailError:
+            print("Email must have format (string1)@(string2).(2+characters)")
 
 @input_error_days_before_birthday
 def birthday_in_days(output_list, address_book: AddressBook):
@@ -350,7 +456,7 @@ def read_contacts_from_file(output_list, address_book: AddressBook):
 def main():
     address_book = AddressBook()
 
-    COMMANDS = {'hello': hello, 'add birthday': add_name_birthday, 'add': add_name_phone, 'change phone': change_phone,
+    COMMANDS = {'hello': hello,  'add phone': add_name_phone, 'add birthday': add_name_birthday, 'add email': add_name_email, 'add address': add_name_address,'change phone': change_phone,
                 'remove phone': remove_phone, 'show all': show_all, 'find': find_name_phone, 'good bye': exit_from_chat, 'close': exit_from_chat, 'exit': exit_from_chat, 'save to': write_contacts_to_file, 'read from ': read_contacts_from_file, 'birthday in days': birthday_in_days}
     while True:
         command_completer = WordCompleter(COMMANDS.keys(),ignore_case=True)
